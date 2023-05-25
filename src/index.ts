@@ -1,6 +1,6 @@
 import express, {Express} from 'express';
 import cors from 'cors';
-import {getCategories, getCategoryById} from "./controllers/CategoryController";
+import {createCategory, getCategories, getCategoryById,} from "./controllers/CategoryController";
 
 const app: Express = express();
 
@@ -10,6 +10,7 @@ app.use(express.urlencoded({extended: true}));
 app.use(cors());
 
 app.get('/', getCategories);
+app.post('/', createCategory);
 app.get('/:id', getCategoryById);
 
 app.listen(3000, () => {

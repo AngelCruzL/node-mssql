@@ -29,3 +29,20 @@ export async function getCategoryById(req: Request, res: Response) {
     console.log(error);
   }
 }
+
+export async function createCategory(req: Request, res: Response) {
+  try {
+    const {name, description} = req.body;
+    let pool = await sql.connect(databaseConfig);
+    let categories = await pool
+      .request()
+      .input("name", sql.VarChar, name)
+      .input("description", sql.VarChar, description)
+      .query(
+        "INSERT INTO category (name, description) VALUES (@name, @description)"
+      ) as CategoryAPIResponse;
+    return res.json(categories.recordsets[0]);
+  } catch (error) {
+    console.log(error);
+  }
+}
