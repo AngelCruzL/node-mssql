@@ -1,6 +1,6 @@
 import express, {Express} from 'express';
 import cors from 'cors';
-import {createCategory, getCategories, getCategoryById,} from "./controllers/CategoryController";
+import {createCategory, getCategories, getCategoryById, updateCategory} from "./controllers/CategoryController";
 
 const app: Express = express();
 
@@ -12,6 +12,7 @@ app.use(cors());
 app.get('/', getCategories);
 app.post('/', createCategory);
 app.get('/:id', getCategoryById);
+app.put('/:id', updateCategory);
 
 app.listen(3000, () => {
   console.log('Server started at port 3000');

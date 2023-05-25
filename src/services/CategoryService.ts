@@ -44,3 +44,25 @@ export async function createCategory(options: CategoryWithoutId) {
     console.log(error);
   }
 }
+
+export async function updateCategory(
+  id: number,
+  options: Partial<CategoryWithoutId>
+) {
+  const {name, description} = options;
+
+  try {
+    let pool = await sql.connect(databaseConfig);
+    let categories = await pool
+      .request()
+      .query(
+        `UPDATE category
+         SET ${name ? `name = '${name}'` : ''} ${name && description ? ',' : ''} ${description ? `description = '${description}'` : ''}
+         WHERE id = ${id}`
+      ) as CategoryAPIResponse;
+
+    return categories.recordsets[0];
+  } catch (error) {
+    console.log(error);
+  }
+}

@@ -29,3 +29,19 @@ export async function createCategory(req: Request, res: Response, next: NextFunc
     console.log(error);
   }
 }
+
+export async function updateCategory(req: Request, res: Response, next: NextFunction) {
+  try {
+    const {id} = req.params;
+    const {name, description} = req.body;
+
+    if (!name && !description) {
+      next(res.json({message: "Name or description must be provided"}));
+    }
+
+    const result = await categoryService.updateCategory(+id, req.body);
+    return res.json(result);
+  } catch (error) {
+    console.log(error);
+  }
+}
