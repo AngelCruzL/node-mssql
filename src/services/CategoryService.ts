@@ -66,3 +66,16 @@ export async function updateCategory(
     console.log(error);
   }
 }
+
+export async function deleteCategory(id: number) {
+  try {
+    let pool = await sql.connect(databaseConfig);
+    await pool
+      .request()
+      .query(`DELETE
+              FROM category
+              WHERE id = ${id}`) as CategoryAPIResponse;
+  } catch (error) {
+    console.log(error);
+  }
+}

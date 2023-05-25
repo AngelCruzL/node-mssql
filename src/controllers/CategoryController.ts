@@ -45,3 +45,13 @@ export async function updateCategory(req: Request, res: Response, next: NextFunc
     console.log(error);
   }
 }
+
+export async function deleteCategory(req: Request, res: Response) {
+  try {
+    const {id} = req.params;
+    await categoryService.deleteCategory(+id);
+    return res.status(204).json();
+  } catch (error) {
+    console.log(error);
+  }
+}
