@@ -1,6 +1,6 @@
 import sql from "mssql";
 
-import {CategoryAPIResponse, CategoryWithoutId} from "../types/category";
+import {Category, CategoryWithoutId} from "../types/category";
 import databaseConfig from "../config/database";
 
 export async function getCategories() {
@@ -8,7 +8,8 @@ export async function getCategories() {
     let pool = await sql.connect(databaseConfig);
     let categories = await pool
       .request()
-      .query("SELECT * from category") as CategoryAPIResponse;
+      .query<Category[]>("SELECT * from category");
+
     return categories.recordsets[0];
   } catch (error) {
     console.log(error);
@@ -21,7 +22,8 @@ export async function getCategoryById(id: number) {
     let categories = await pool
       .request()
       .input("id", sql.Int, id)
-      .query("SELECT * from category WHERE id = @id") as CategoryAPIResponse;
+      .query<Category[]>("SELECT * from category WHERE id = @id");
+
     return categories.recordsets[0];
   } catch (error) {
     console.log(error);
@@ -36,9 +38,10 @@ export async function createCategory(options: CategoryWithoutId) {
       .request()
       .input("name", sql.VarChar, name)
       .input("description", sql.VarChar, description)
-      .query(
+      .query<Category[]>(
         "INSERT INTO category (name, description) VALUES (@name, @description)"
-      ) as CategoryAPIResponse;
+      );
+
     return categories.recordsets[0];
   } catch (error) {
     console.log(error);
@@ -55,11 +58,11 @@ export async function updateCategory(
     let pool = await sql.connect(databaseConfig);
     let categories = await pool
       .request()
-      .query(
+      .query<Category[]>(
         `UPDATE category
          SET ${name ? `name = '${name}'` : ''} ${name && description ? ',' : ''} ${description ? `description = '${description}'` : ''}
          WHERE id = ${id}`
-      ) as CategoryAPIResponse;
+      );
 
     return categories.recordsets[0];
   } catch (error) {
@@ -74,7 +77,7 @@ export async function deleteCategory(id: number) {
       .request()
       .query(`DELETE
               FROM category
-              WHERE id = ${id}`) as CategoryAPIResponse;
+              WHERE id = ${id}`);
   } catch (error) {
     console.log(error);
   }
