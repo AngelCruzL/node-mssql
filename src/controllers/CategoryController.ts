@@ -1,47 +1,30 @@
-import {Request, Response} from "express";
-import sql from "mssql";
-
-import databaseConfig from "../config/database";
-import {CategoryAPIResponse} from "../types/category";
+import {NextFunction, Request, Response} from "express";
+import * as categoryService from "../services/CategoryService";
 
 export async function getCategories(req: Request, res: Response) {
-  try {
-    let pool = await sql.connect(databaseConfig);
-    let categories = await pool
-      .request()
-      .query("SELECT * from category") as CategoryAPIResponse;
-    return res.json(categories.recordsets[0]);
-  } catch (error) {
-    console.log(error);
-  }
+  const categories = await categoryService.getCategories();
+  return res.json(categories);
 }
 
 export async function getCategoryById(req: Request, res: Response) {
   try {
-    const {id} = req.params;
-    let pool = await sql.connect(databaseConfig);
-    let categories = await pool
-      .request()
-      .input("id", sql.Int, id)
-      .query("SELECT * from category WHERE id = @id") as CategoryAPIResponse;
-    return res.json(categories.recordsets[0]);
+    const result = await categoryService.getCategoryById(+req.params.id);
+    return res.json(result);
   } catch (error) {
     console.log(error);
   }
 }
 
-export async function createCategory(req: Request, res: Response) {
+export async function createCategory(req: Request, res: Response, next: NextFunction) {
   try {
     const {name, description} = req.body;
-    let pool = await sql.connect(databaseConfig);
-    let categories = await pool
-      .request()
-      .input("name", sql.VarChar, name)
-      .input("description", sql.VarChar, description)
-      .query(
-        "INSERT INTO category (name, description) VALUES (@name, @description)"
-      ) as CategoryAPIResponse;
-    return res.json(categories.recordsets[0]);
+
+    if (!name || !description) {
+      next(res.json({message: "Name and description must be provided"}));
+    }
+
+    const result = await categoryService.createCategory(req.body);
+    return res.json(result);
   } catch (error) {
     console.log(error);
   }
